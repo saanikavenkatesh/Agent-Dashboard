@@ -1,0 +1,254 @@
+{
+  "period": "Week ending June 28, 2026",
+  "overview": [
+    {
+      "label": "Total runs",
+      "value": "2,130"
+    },
+    {
+      "label": "Encounters processed",
+      "value": "4,924"
+    },
+    {
+      "label": "Total suggestions",
+      "value": "5,924"
+    },
+    {
+      "label": "Runaway alerts",
+      "value": "12",
+      "alert": true
+    }
+  ],
+  "agents": [
+    {
+      "id": "family-history",
+      "name": "Family History",
+      "runs": 1240,
+      "encounters": 2850,
+      "total_suggestions": 3420,
+      "approved_suggestions": "2,940",
+      "dismissed_suggestions": "480",
+      "pending_suggestions": "0",
+      "errored_suggestions": "0",
+      "cache_hit_rate": "87%",
+      "avg_api_calls": "8.2",
+      "avg_tokens": "2,840",
+      "total_tokens": "8,090,000",
+      "accept_rate": "86%",
+      "cost_cad": "$3,680 CAD",
+      "cost_usd": "$2,670 USD",
+      "cost_per_encounter_cad": "$1.29 CAD",
+      "metrics": {
+        "cache_target": "80%"
+      },
+      "outliers": [
+        {
+          "encounter_hash": "4a44dc15364204a80fe80e9039455cc1",
+          "total_tokens": 18240,
+          "api_calls_count": 142,
+          "account_domain": "clinic_a"
+        },
+        {
+          "encounter_hash": "2e9d8b4f6c1a3e9b7d2f5a8c1e4b6d9f",
+          "total_tokens": 15620,
+          "api_calls_count": 118,
+          "account_domain": "clinic_c"
+        },
+        {
+          "encounter_hash": "5b6a2e3d7f9b1c4d6e8a0f2b4d6e8f0a",
+          "total_tokens": 14150,
+          "api_calls_count": 96,
+          "account_domain": "clinic_d"
+        }
+      ]
+    },
+    {
+      "id": "social-history",
+      "name": "Social History",
+      "runs": 890,
+      "encounters": 2074,
+      "total_suggestions": 2504,
+      "approved_suggestions": "1,752",
+      "dismissed_suggestions": "752",
+      "pending_suggestions": "0",
+      "errored_suggestions": "0",
+      "cache_hit_rate": "52%",
+      "avg_api_calls": "14.1",
+      "avg_tokens": "4,120",
+      "total_tokens": "8,551,000",
+      "accept_rate": "70%",
+      "cost_cad": "$2,971 CAD",
+      "cost_usd": "$2,154 USD",
+      "cost_per_encounter_cad": "$1.43 CAD",
+      "metrics": {
+        "cache_target": "40%"
+      },
+      "outliers": [
+        {
+          "encounter_hash": "8f7b2c91a5d3e8f4b6c2a9d7e1f3b5c8",
+          "total_tokens": 16850,
+          "api_calls_count": 128,
+          "account_domain": "clinic_b"
+        },
+        {
+          "encounter_hash": "7c3e1b9a8f2d4c6e9a1b3d5f7a9c1e3b",
+          "total_tokens": 14920,
+          "api_calls_count": 105,
+          "account_domain": "clinic_a"
+        },
+        {
+          "encounter_hash": "9d4c8e1b5a3f7e2c6d1a4b8e0f3c5e7a",
+          "total_tokens": 13840,
+          "api_calls_count": 91,
+          "account_domain": "clinic_b"
+        }
+      ]
+    }
+  ],
+  "tokenUtilization": [
+    {
+      "title": "Cache hit rate",
+      "metrics": [
+        {
+          "value": "87%",
+          "label": "Family History"
+        },
+        {
+          "value": "52%",
+          "label": "Social History"
+        }
+      ]
+    },
+    {
+      "title": "Avg API calls per encounter",
+      "metrics": [
+        {
+          "value": "8.2",
+          "label": "Family History"
+        },
+        {
+          "value": "14.1",
+          "label": "Social History"
+        }
+      ]
+    },
+    {
+      "title": "Avg tokens per encounter",
+      "metrics": [
+        {
+          "value": "2,840",
+          "label": "Family History"
+        },
+        {
+          "value": "4,120",
+          "label": "Social History"
+        }
+      ]
+    }
+  ],
+  "outliers": [
+    {
+      "encounter_hash": "4a44dc15364204a80fe80e9039455cc1",
+      "total_tokens": 18240,
+      "api_calls_count": 142,
+      "agent_name": "Family History",
+      "account_domain": "clinic_a"
+    },
+    {
+      "encounter_hash": "8f7b2c91a5d3e8f4b6c2a9d7e1f3b5c8",
+      "total_tokens": 16850,
+      "api_calls_count": 128,
+      "agent_name": "Social History",
+      "account_domain": "clinic_b"
+    },
+    {
+      "encounter_hash": "2e9d8b4f6c1a3e9b7d2f5a8c1e4b6d9f",
+      "total_tokens": 15620,
+      "api_calls_count": 118,
+      "agent_name": "Family History",
+      "account_domain": "clinic_c"
+    },
+    {
+      "encounter_hash": "7c3e1b9a8f2d4c6e9a1b3d5f7a9c1e3b",
+      "total_tokens": 14920,
+      "api_calls_count": 105,
+      "agent_name": "Social History",
+      "account_domain": "clinic_a"
+    },
+    {
+      "encounter_hash": "5b6a2e3d7f9b1c4d6e8a0f2b4d6e8f0a",
+      "total_tokens": 14150,
+      "api_calls_count": 96,
+      "agent_name": "Family History",
+      "account_domain": "clinic_d"
+    },
+    {
+      "encounter_hash": "9d4c8e1b5a3f7e2c6d1a4b8e0f3c5e7a",
+      "total_tokens": 13840,
+      "api_calls_count": 91,
+      "agent_name": "Social History",
+      "account_domain": "clinic_b"
+    },
+    {
+      "encounter_hash": "1a7d9e2f4c6b8a1d3e5f7a9b1c3d5e7f",
+      "total_tokens": 13420,
+      "api_calls_count": 84,
+      "agent_name": "Family History",
+      "account_domain": "clinic_e"
+    },
+    {
+      "encounter_hash": "6f3b8a5d2e7f1a4c6b8e0d2f4a6c8e0a",
+      "total_tokens": 12980,
+      "api_calls_count": 76,
+      "agent_name": "Social History",
+      "account_domain": "clinic_c"
+    },
+    {
+      "encounter_hash": "3c2f7a9b1d5e8f2a4c6e8a1b3d5f7a9c",
+      "total_tokens": 12640,
+      "api_calls_count": 71,
+      "agent_name": "Family History",
+      "account_domain": "clinic_d"
+    },
+    {
+      "encounter_hash": "8b1e6c4a3f9d2b5e7a0c3f5d8a2b4e6f",
+      "total_tokens": 12180,
+      "api_calls_count": 68,
+      "agent_name": "Social History",
+      "account_domain": "clinic_e"
+    }
+  ],
+  "costSummary": {
+    "weekly_cost_cad": "$6,651 CAD",
+    "weekly_cost_usd": "$4,820 USD",
+    "cost_per_encounter_cad": "$1.35 CAD",
+    "cost_per_encounter_usd": "$0.98 USD",
+    "by_clinic": [
+      {
+        "account_domain": "clinic_a",
+        "cost_cad": "$1,580 CAD",
+        "percentage": "24%"
+      },
+      {
+        "account_domain": "clinic_b",
+        "cost_cad": "$1,320 CAD",
+        "percentage": "20%"
+      },
+      {
+        "account_domain": "clinic_c",
+        "cost_cad": "$1,195 CAD",
+        "percentage": "18%"
+      },
+      {
+        "account_domain": "clinic_d",
+        "cost_cad": "$995 CAD",
+        "percentage": "15%"
+      },
+      {
+        "account_domain": "clinic_e",
+        "cost_cad": "$860 CAD",
+        "percentage": "13%"
+      }
+    ]
+  }
+}

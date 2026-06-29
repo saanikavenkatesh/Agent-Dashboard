@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/agent-dashboard/static/css/main.b0d3a34b.css",
+    "main.js": "/agent-dashboard/static/js/main.01940f6f.js",
+    "index.html": "/agent-dashboard/index.html",
+    "main.b0d3a34b.css.map": "/agent-dashboard/static/css/main.b0d3a34b.css.map",
+    "main.01940f6f.js.map": "/agent-dashboard/static/js/main.01940f6f.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.b0d3a34b.css",
+    "static/js/main.01940f6f.js"
+  ]
+}
