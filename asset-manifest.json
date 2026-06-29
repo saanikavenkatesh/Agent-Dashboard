@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/agent-dashboard/static/css/main.b0d3a34b.css",
-    "main.js": "/agent-dashboard/static/js/main.764358fb.js",
-    "index.html": "/agent-dashboard/index.html",
-    "main.b0d3a34b.css.map": "/agent-dashboard/static/css/main.b0d3a34b.css.map",
-    "main.764358fb.js.map": "/agent-dashboard/static/js/main.764358fb.js.map"
+    "main.css": "/Agent-Dashboard/static/css/main.b0d3a34b.css",
+    "main.js": "/Agent-Dashboard/static/js/main.f35cc3cc.js",
+    "index.html": "/Agent-Dashboard/index.html",
+    "main.b0d3a34b.css.map": "/Agent-Dashboard/static/css/main.b0d3a34b.css.map",
+    "main.f35cc3cc.js.map": "/Agent-Dashboard/static/js/main.f35cc3cc.js.map"
   },
   "entrypoints": [
     "static/css/main.b0d3a34b.css",
-    "static/js/main.764358fb.js"
+    "static/js/main.f35cc3cc.js"
   ]
 }
