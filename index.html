@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinical Analytics Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+    <style>
+        :root {
+            --color-bg: #ffffff;
+            --color-surface: #f9fafb;
+            --color-surface-alt: #f3f4f6;
+            --color-text-primary: #1f2937;
+            --color-text-secondary: #6b7280;
+            --color-text-muted: #9ca3af;
+            --color-border: #e5e7eb;
+            --color-accent: #3b82f6;
+            --color-accent-dark: #1e40af;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-danger: #ef4444;
+            --color-shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        html.dark-mode {
+            --color-bg: #1a1a1a;
+            --color-surface: #242424;
+            --color-surface-alt: #2d2d2d;
+            --color-text-primary: #f3f4f6;
+            --color-text-secondary: #d1d5db;
+            --color-text-muted: #9ca3af;
+            --color-border: #404040;
+            --color-shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--color-surface);
+            color: var(--color-text-primary);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .header {
+            background-color: var(--color-bg);
+            border-bottom: 1px solid var(--color-border);
+            padding: 24px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--color-text-primary);
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid var(--color-border);
+            background-color: var(--color-surface);
+            color: var(--color-text-primary);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn:hover {
+            background-color: var(--color-surface-alt);
+            border-color: var(--color-accent);
+        }
+
+        .btn-primary {
+            background-color: var(--color-accent);
+            color: white;
+            border-color: var(--color-accent);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--color-accent-dark);
+        }
+
+        .date-range-picker {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background-color: var(--color-surface);
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--color-border);
+        }
+
+        .date-range-picker input {
+            padding: 6px 8px;
+            border: 1px solid var(--color-border);
+            border-radius: 4px;
+            background-color: var(--color-bg);
+            color: var(--color-text-primary);
+            font-size: 13px;
+        }
+
+        .date-range-picker input:focus {
+            outline: none;
+            border-color: var(--color-accent);
+        }
+
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .last-updated {
+            font-size: 13px;
+            color: var(--color-text-muted);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid var(--color-border);
+            background-color: var(--color-bg);
+        }
+
+        .tab {
+            padding: 16px 24px;
+            border: none;
+            background: none;
+            color: var(--color-text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: var(--color-text-primary);
+        }
+
+        .tab.active {
+            color: var(--color-accent);
+            border-bottom-color: var(--color-accent);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .metric-card {
+            background-color: var(--color-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 3px var(--color-shadow);
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: var(--color-text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--color-text-primary);
+            margin-bottom: 8px;
+        }
+
+        .metric-change {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+        }
+
+        .metric-change.positive {
+            color: var(--color-success);
+        }
+
+        .chart-section {
+            background-color: var(--color-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px var(--color-shadow);
+        }
+
+        .chart-section h2 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--color-text-primary);
+        }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .agent-item {
+            text-align: center;
+            padding: 16px;
+            background-color: var(--color-surface);
+            border-radius: 6px;
+            border: 1px solid var(--color-border);
+        }
+
+        .agent-label {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            margin-bottom: 8px;
+            word-break: break-word;
+        }
+
+        .agent-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--color-accent);
+        }
+
+        .footer {
+            text-align: center;
+            color: var(--color-text-muted);
+            font-size: 12px;
+            margin-top: 32px;
+            padding-top: 16px;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--color-text-muted);
+        }
+
+        .quick-preset {
+            display: flex;
+            gap: 8px;
+            margin-left: 12px;
+            padding-left: 12px;
+            border-left: 1px solid var(--color-border);
+        }
+
+        .preset-btn {
+            padding: 4px 10px;
+            font-size: 12px;
+            background-color: transparent;
+            border: 1px solid var(--color-border);
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .preset-btn:hover {
+            background-color: var(--color-surface-alt);
+            color: var(--color-text-primary);
+        }
+
+        .preset-btn.active {
+            background-color: var(--color-accent);
+            color: white;
+            border-color: var(--color-accent);
+        }
+
+        .cost-breakdown {
+            padding: 20px;
+            background-color: var(--color-surface);
+            border-radius: 6px;
+        }
+
+        .cost-breakdown h3 {
+            margin-bottom: 16px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .cost-item {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .cost-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .cost-row-label {
+            color: var(--color-text-secondary);
+        }
+
+        .cost-row-value {
+            font-weight: 600;
+            color: var(--color-accent);
+        }
+
+        @media (max-width: 768px) {
+            .header-top {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .header-controls {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .date-range-picker {
+                flex-wrap: wrap;
+                width: 100%;
+            }
+
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="header-top">
+                <div class="header-title">Clinical Analytics</div>
+                <div class="header-controls">
+                    <div class="date-range-picker">
+                        <label style="font-size: 13px; color: var(--color-text-secondary);">Date Range:</label>
+                        <input type="date" id="startDate" />
+                        <span style="color: var(--color-text-muted);">to</span>
+                        <input type="date" id="endDate" />
+                        <div class="quick-preset">
+                            <button class="preset-btn active" data-days="7">Last 7</button>
+                            <button class="preset-btn" data-days="30">Last 30</button>
+                            <button class="preset-btn" data-days="90">Last 90</button>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="refreshData()">
+                        <span>↻</span> Refresh
+                    </button>
+                    <button class="btn" onclick="toggleDarkMode()">
+                        <span id="modeIcon">🌙</span>
+                    </button>
+                </div>
+            </div>
+            <div class="header-info">
+                <div class="last-updated">Last updated: <span id="lastUpdated">-</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tabs" style="background-color: var(--color-bg); border-bottom: 1px solid var(--color-border);">
+        <button class="tab active" onclick="switchTab('overview')">Overview</button>
+        <button class="tab" onclick="switchTab('cost')">Cost</button>
+    </div>
+
+    <div id="overview" class="tab-content active">
+        <div class="container">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Total Encounters</div>
+                    <div class="metric-value" id="total-encounters">-</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Total Suggestions</div>
+                    <div class="metric-value" id="total-suggestions">-</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Total API Calls</div>
+                    <div class="metric-value" id="total-runs">-</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Avg Tokens/Encounter</div>
+                    <div class="metric-value" id="avg-tokens">-</div>
+                </div>
+            </div>
+
+            <div class="chart-section">
+                <h2>Metrics by Agent</h2>
+                <div class="agents-grid" id="agents-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <div class="chart-grid">
+                <div class="chart-section">
+                    <h2>Encounters by Account (Top 10)</h2>
+                    <div class="chart-container">
+                        <canvas id="accountChart" role="img" aria-label="Encounters by account"></canvas>
+                    </div>
+                </div>
+                <div class="chart-section">
+                    <h2>Suggestion Distribution</h2>
+                    <div class="chart-container">
+                        <canvas id="suggestionChart" role="img" aria-label="Suggestion outcomes"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="cost" class="tab-content">
+        <div class="container">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Estimated Total Cost</div>
+                    <div class="metric-value" id="total-cost">-</div>
+                    <div style="font-size: 11px; color: var(--color-text-muted); margin-top: 8px;">Based on Claude API pricing</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Cost per Encounter</div>
+                    <div class="metric-value" id="cost-per-encounter">-</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Cost per Suggestion</div>
+                    <div class="metric-value" id="cost-per-suggestion">-</div>
+                </div>
+            </div>
+
+            <div class="chart-grid">
+                <div class="chart-section">
+                    <h2>Token Usage Distribution</h2>
+                    <div class="chart-container">
+                        <canvas id="tokenChart" role="img" aria-label="Token distribution"></canvas>
+                    </div>
+                </div>
+                <div class="chart-section cost-breakdown">
+                    <h3>Cost Breakdown</h3>
+                    <div class="cost-item">
+                        <div class="cost-row">
+                            <span class="cost-row-label">Prompt Tokens</span>
+                            <span class="cost-row-value" id="prompt-cost">-</span>
+                        </div>
+                        <div class="cost-row">
+                            <span class="cost-row-label">Cached Tokens</span>
+                            <span class="cost-row-value" id="cached-cost">-</span>
+                        </div>
+                        <div class="cost-row">
+                            <span class="cost-row-label">Completion Tokens</span>
+                            <span class="cost-row-value" id="completion-cost">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="footer">
+            Data processed locally with encounter IDs hashed for privacy. Patient IDs excluded.
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script>
+        // Pricing model (Claude API pricing)
+        const PRICING = {
+            promptTokens: 0.003 / 1000,      // $0.003 per 1K tokens
+            cachedTokens: 0.0009 / 1000,     // $0.0009 per 1K tokens (70% discount)
+            completionTokens: 0.006 / 1000   // $0.006 per 1K tokens
+        };
+
+        let allData = [];
+        let filteredData = [];
+
+        // Dark mode
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark-mode');
+            const icon = document.getElementById('modeIcon');
+            icon.textContent = document.documentElement.classList.contains('dark-mode') ? '☀️' : '🌙';
+            localStorage.setItem('darkMode', document.documentElement.classList.contains('dark-mode'));
+        }
+
+        // Load dark mode preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.documentElement.classList.add('dark-mode');
+            document.getElementById('modeIcon').textContent = '☀️';
+        }
+
+        // Date range handling
+        function setDateRange(days) {
+            const end = new Date();
+            const start = new Date();
+            start.setDate(end.getDate() - days);
+
+            document.getElementById('startDate').valueAsDate = start;
+            document.getElementById('endDate').valueAsDate = end;
+
+            // Update preset buttons
+            document.querySelectorAll('.preset-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.days === String(days)) {
+                    btn.classList.add('active');
+                }
+            });
+
+            filterAndRender();
+        }
+
+        // Initialize date range
+        function initializeDateRange() {
+            setDateRange(7);
+        }
+
+        // Filter data by date range
+        function filterAndRender() {
+            const start = new Date(document.getElementById('startDate').value);
+            const end = new Date(document.getElementById('endDate').value);
+            end.setDate(end.getDate() + 1); // Include entire end date
+
+            filteredData = allData.filter(row => {
+                const date = new Date(row.last_interaction_at);
+                return date >= start && date <= end;
+            });
+
+            renderDashboard();
+        }
+
+        // Parse and load CSV
+        function loadCSV(csvText) {
+            Papa.parse(csvText, {
+                header: true,
+                skipEmptyLines: true,
+                complete: (results) => {
+                    allData = results.data.map(row => ({
+                        ...row,
+                        api_calls_count: parseInt(row.api_calls_count) || 0,
+                        prompt_tokens: parseInt(row.prompt_tokens) || 0,
+                        cached_tokens: parseInt(row.cached_tokens) || 0,
+                        completion_tokens: parseInt(row.completion_tokens) || 0,
+                        total_tokens: parseInt(row.total_tokens) || 0,
+                        approved_suggestions: parseInt(row.approved_suggestions) || 0,
+                        dismissed_suggestions: parseInt(row.dismissed_suggestions) || 0,
+                        removed_suggestions: parseInt(row.removed_suggestions) || 0,
+                        errored_suggestions: parseInt(row.errored_suggestions) || 0,
+                        pending_suggestions: parseInt(row.pending_suggestions) || 0,
+                    }));
+
+                    initializeDateRange();
+                    updateLastUpdated();
+                },
+                error: (error) => {
+                    console.error('Parse error:', error);
+                }
+            });
+        }
+
+        // Render dashboard
+        function renderDashboard() {
+            renderMetrics();
+            renderAgents();
+            renderCharts();
+        }
+
+        // Render metrics
+        function renderMetrics() {
+            const totalEncounters = filteredData.length;
+            const totalSuggestions = filteredData.reduce((sum, r) => sum + (parseInt(r.approved_suggestions) || 0) + (parseInt(r.dismissed_suggestions) || 0) + (parseInt(r.removed_suggestions) || 0) + (parseInt(r.errored_suggestions) || 0) + (parseInt(r.pending_suggestions) || 0), 0);
+            const totalRuns = filteredData.reduce((sum, r) => sum + (parseInt(r.api_calls_count) || 0), 0);
+            const avgTokens = Math.round((filteredData.reduce((sum, r) => sum + (parseInt(r.total_tokens) || 0), 0) || 0) / (totalEncounters || 1) / 1000) + 'K';
+
+            document.getElementById('total-encounters').textContent = totalEncounters.toLocaleString();
+            document.getElementById('total-suggestions').textContent = totalSuggestions.toLocaleString();
+            document.getElementById('total-runs').textContent = totalRuns.toLocaleString();
+            document.getElementById('avg-tokens').textContent = avgTokens;
+
+            // Cost calculations
+            const promptCost = filteredData.reduce((sum, r) => sum + ((parseInt(r.prompt_tokens) || 0) * PRICING.promptTokens), 0);
+            const cachedCost = filteredData.reduce((sum, r) => sum + ((parseInt(r.cached_tokens) || 0) * PRICING.cachedTokens), 0);
+            const completionCost = filteredData.reduce((sum, r) => sum + ((parseInt(r.completion_tokens) || 0) * PRICING.completionTokens), 0);
+            const totalCost = promptCost + cachedCost + completionCost;
+
+            document.getElementById('total-cost').textContent = '$' + totalCost.toFixed(2);
+            document.getElementById('cost-per-encounter').textContent = '$' + (totalCost / (totalEncounters || 1)).toFixed(4);
+            document.getElementById('cost-per-suggestion').textContent = '$' + (totalCost / (totalSuggestions || 1)).toFixed(4);
+            document.getElementById('prompt-cost').textContent = '$' + promptCost.toFixed(2);
+            document.getElementById('cached-cost').textContent = '$' + cachedCost.toFixed(2);
+            document.getElementById('completion-cost').textContent = '$' + completionCost.toFixed(2);
+        }
+
+        // Render agents
+        function renderAgents() {
+            const agents = {};
+            filteredData.forEach(row => {
+                if (!agents[row.agent_name]) {
+                    agents[row.agent_name] = { count: 0, tokens: 0, approved: 0 };
+                }
+                agents[row.agent_name].count += 1;
+                agents[row.agent_name].tokens += parseInt(row.total_tokens) || 0;
+                agents[row.agent_name].approved += parseInt(row.approved_suggestions) || 0;
+            });
+
+            const html = Object.entries(agents).map(([name, stats]) => `
+                <div class="agent-item">
+                    <div class="agent-label">${name}</div>
+                    <div class="agent-value">${stats.count}</div>
+                    <div style="font-size: 11px; color: var(--color-text-muted); margin-top: 8px;">encounters</div>
+                </div>
+            `).join('');
+
+            document.getElementById('agents-grid').innerHTML = html;
+        }
+
+        // Render charts
+        function renderCharts() {
+            const ctx1 = document.getElementById('accountChart');
+            const ctx2 = document.getElementById('suggestionChart');
+            const ctx3 = document.getElementById('tokenChart');
+
+            if (window.accountChartInstance) window.accountChartInstance.destroy();
+            if (window.suggestionChartInstance) window.suggestionChartInstance.destroy();
+            if (window.tokenChartInstance) window.tokenChartInstance.destroy();
+
+            // Account chart
+            const accountSummary = {};
+            filteredData.forEach(row => {
+                if (!accountSummary[row.account_domain]) {
+                    accountSummary[row.account_domain] = 0;
+                }
+                accountSummary[row.account_domain]++;
+            });
+
+            const accountData = Object.entries(accountSummary)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10)
+                .map(([domain, count]) => ({ label: domain, count }));
+
+            window.accountChartInstance = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: accountData.map(d => d.label),
+                    datasets: [{
+                        label: 'Encounters',
+                        data: accountData.map(d => d.count),
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+
+            // Suggestion chart
+            const approved = filteredData.reduce((sum, r) => sum + (parseInt(r.approved_suggestions) || 0), 0);
+            const dismissed = filteredData.reduce((sum, r) => sum + (parseInt(r.dismissed_suggestions) || 0), 0);
+            const removed = filteredData.reduce((sum, r) => sum + (parseInt(r.removed_suggestions) || 0), 0);
+            const errored = filteredData.reduce((sum, r) => sum + (parseInt(r.errored_suggestions) || 0), 0);
+            const pending = filteredData.reduce((sum, r) => sum + (parseInt(r.pending_suggestions) || 0), 0);
+
+            window.suggestionChartInstance = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Approved', 'Dismissed', 'Removed', 'Errored', 'Pending'],
+                    datasets: [{
+                        data: [approved, dismissed, removed, errored, pending],
+                        backgroundColor: ['#10b981', '#ef4444', '#8b5cf6', '#f59e0b', '#6b7280']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+
+            // Token chart
+            const promptTokens = filteredData.reduce((sum, r) => sum + (parseInt(r.prompt_tokens) || 0), 0);
+            const cachedTokens = filteredData.reduce((sum, r) => sum + (parseInt(r.cached_tokens) || 0), 0);
+            const completionTokens = filteredData.reduce((sum, r) => sum + (parseInt(r.completion_tokens) || 0), 0);
+
+            window.tokenChartInstance = new Chart(ctx3, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Prompt', 'Cached', 'Completion'],
+                    datasets: [{
+                        data: [promptTokens, cachedTokens, completionTokens],
+                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        // Update last updated time
+        function updateLastUpdated() {
+            const now = new Date();
+            document.getElementById('lastUpdated').textContent = now.toLocaleString();
+        }
+
+        // Switch tabs
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Refresh data
+        function refreshData() {
+            updateLastUpdated();
+            filterAndRender();
+        }
+
+        // Event listeners
+        document.getElementById('startDate').addEventListener('change', filterAndRender);
+        document.getElementById('endDate').addEventListener('change', filterAndRender);
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => setDateRange(parseInt(btn.dataset.days)));
+        });
+
+        // Load CSV on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            fetch('data.csv')
+                .then(response => response.text())
+                .then(text => loadCSV(text))
+                .catch(err => {
+                    console.error('Error loading CSV:', err);
+                    document.querySelector('.container').innerHTML = '<div class="loading">Unable to load data.csv. Make sure the file is in the same directory as index.html</div>';
+                });
+        });
+    </script>
+</body>
+</html>
